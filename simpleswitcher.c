@@ -855,12 +855,10 @@ void run_switcher(int mode, int fmode)
 					&& !client_has_state(c, netatoms[_NET_WM_STATE_SKIP_PAGER])
 					&& !client_has_state(c, netatoms[_NET_WM_STATE_SKIP_TASKBAR]))
 				{
-					if (mode == DESKTOPWINDOWS)
-					{
-						unsigned long wmdesktop = 0;
-						window_get_cardinal_prop(c->window, netatoms[_NET_WM_DESKTOP], &wmdesktop, 1);
-						if (wmdesktop != current_desktop) continue;
-					}
+					unsigned long wmdesktop = 0;
+					window_get_cardinal_prop(c->window, netatoms[_NET_WM_DESKTOP], &wmdesktop, 1);
+					if (mode == ALLWINDOWS && wmdesktop == -1) continue;
+					if (mode == DESKTOPWINDOWS && wmdesktop != current_desktop) continue;
 					classfield = MAX(classfield, strlen(c->class));
 					winlist_append(ids, c->window, NULL);
 				}
@@ -1072,7 +1070,7 @@ int main(int argc, char *argv[])
 
 	XrmInitialize();
 	char * xRMS = XResourceManagerString ( display );
-	
+
 	if ( xRMS != NULL ) {
 		XrmDatabase xDB = XrmGetStringDatabase ( xRMS );
 
